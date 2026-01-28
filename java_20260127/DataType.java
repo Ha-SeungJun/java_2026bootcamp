@@ -1,4 +1,4 @@
-package javaFund;
+package java_20260127;
 
 public class DataType {
 

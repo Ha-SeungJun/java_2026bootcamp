@@ -1,9 +1,8 @@
-package javaFund;
+package java_Assignment;
 
-import javax.swing.JOptionPane;
 import java.util.Scanner;
 
-public class quiz_3 {
+public class score {
 	//score.java 파일을 생성해서 아래와 같은 결과를 도출하는 로직을 작성 >>>>>>>>>>>>quiz_3로 대체함
 	//Why? 퀴즈 문제 정리를 위해..
 	//학생의 성적을 국영수 입력 받아 총점 평균 학점을 출력 

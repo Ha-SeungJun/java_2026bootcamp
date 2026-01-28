@@ -1,4 +1,4 @@
-package javaFund;
+package java_quiz;
 
 import javax.swing.JOptionPane;
 

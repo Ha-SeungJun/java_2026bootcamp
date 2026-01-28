@@ -1,4 +1,4 @@
-package javaFund;
+package java_quiz;
 
 public class quiz_1 {
 	public static void main(String[] args) {
