@@ -3,7 +3,8 @@ package java_quiz;
 import javax.swing.JOptionPane;
 
 public class quiz_2 {
-
+	//가위바위보 만들기 1,2,3으로도 가능하도록
+	
 	public static void main(String[] args) {
 		int win = 0, lose = 0, draw = 0;
 
