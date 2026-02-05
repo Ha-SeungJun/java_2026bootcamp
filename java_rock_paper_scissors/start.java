@@ -35,7 +35,7 @@ public class start extends JFrame {
         Image img = icon.getImage();
         Image scaledImg = img.getScaledInstance(600, 400, Image.SCALE_SMOOTH);
         JLabel label = new JLabel(new ImageIcon(scaledImg));
-        label.setBounds(300, 100, 600, 400);
+        label.setBounds(300, 125, 600, 400);
         jf.add(label);
 
         // 초기 화면 표시
@@ -63,11 +63,11 @@ public class start extends JFrame {
         JButton btn4 = new JButton("랭킹보기");
         JButton btn5 = new JButton("나가기");
 
-        btn1.setBounds(150, 600, 100, 50);
-        btn2.setBounds(350, 600, 100, 50);
-        btn3.setBounds(550, 600, 100, 50);
-        btn4.setBounds(750, 600, 100, 50);
-        btn5.setBounds(950, 600, 100, 50);
+        btn1.setBounds(125, 600, 150, 75);
+        btn2.setBounds(325, 600, 150, 75);
+        btn3.setBounds(525, 600, 150, 75);
+        btn4.setBounds(725, 600, 150, 75);
+        btn5.setBounds(925, 600, 150, 75);
 
         // 로그인 버튼 이벤트
         btn1.addActionListener(e -> {
@@ -127,16 +127,15 @@ public class start extends JFrame {
         JButton btn4 = new JButton("로그아웃");
         JButton btn5 = new JButton("나가기");
 
-        btn1.setBounds(150, 600, 120, 50);
-        btn2.setBounds(350, 600, 120, 50);
-        btn3.setBounds(550, 600, 120, 50);
-        btn4.setBounds(750, 600, 120, 50);
-        btn5.setBounds(950, 600, 120, 50);
+        btn1.setBounds(125, 600, 150, 75);
+        btn2.setBounds(325, 600, 150, 75);
+        btn3.setBounds(525, 600, 150, 75);
+        btn4.setBounds(725, 600, 150, 75);
+        btn5.setBounds(925, 600, 150, 75);
 
         // 게임하기 버튼 이벤트
         btn1.addActionListener(e -> {
             new Game(); // 게임 화면으로 이동
-            JOptionPane.showMessageDialog(jf, "게임 화면으로 이동합니다!", "게임 시작", JOptionPane.INFORMATION_MESSAGE);
         });
 
         // 전적보기 버튼 이벤트
