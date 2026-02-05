@@ -271,15 +271,15 @@ public class Game extends JFrame {
         
         switch (result) {
             case "win":
-                resultLabel.setText("🎉 승리! " + playerText + "이(가) " + computerText + "을(를) 이겼습니다!");
+                resultLabel.setText("승리! " + playerText + "이(가) " + computerText + "을(를) 이겼습니다!");
                 resultLabel.setForeground(new Color(0, 150, 0));
                 break;
             case "lose":
-                resultLabel.setText("😢 패배! " + computerText + "이(가) " + playerText + "을(를) 이겼습니다!");
+                resultLabel.setText("패배! " + computerText + "이(가) " + playerText + "을(를) 이겼습니다!");
                 resultLabel.setForeground(new Color(200, 0, 0));
                 break;
             case "draw":
-                resultLabel.setText("🤝 무승부! 둘 다 " + playerText + "을(를) 선택했습니다!");
+                resultLabel.setText("무승부! 둘 다 " + playerText + "을(를) 선택했습니다!");
                 resultLabel.setForeground(new Color(100, 100, 100));
                 break;
         }

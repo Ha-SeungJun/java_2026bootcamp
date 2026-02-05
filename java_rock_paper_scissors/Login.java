@@ -52,7 +52,6 @@ public class Login extends JFrame {
         add(cancelBtn);
         
         // 로그인 버튼 이벤트
-     // 로그인 버튼 이벤트 수정
         loginBtn.addActionListener(e -> {
             String id = idField.getText();
             String password = new String(passwordField.getPassword());

@@ -55,7 +55,6 @@ public class UserDatabase {
     
     // 회원가입
     public static boolean registerUser(String name, String phone, String email, String password) {
-        // 이메일 중복 체크
         if (isEmailExists(email)) {
             return false;
         }
