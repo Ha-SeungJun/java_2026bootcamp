@@ -3,6 +3,7 @@ package java_r_p_s_2;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 class user{
@@ -50,7 +51,7 @@ class user{
 	}
     public double rate() {
         if ( wins + draws + losses == 0) return 0.0;
-        return (double) wins / wins + draws + losses * 100;
+        return (double) wins / (wins + draws + losses) * 100;
     }
     public void LoginTimeupdate(String id, String lastLoginTime) {
     	this.lastLoginTime = lastLoginTime;
@@ -101,35 +102,64 @@ public class start{
 			pw = sc.next();
 			
 			user player = login(id, pw);
-			System.out.printf(" -로그인 성공, 환영합니다 %s 님 \n -마지막 접속일 : %s \n",player.name, player.lastLoginTime);
-			p_id = player.id;
-			delay(1000);
-			//로그인 성공시 게임메뉴 메소드 새로 만들어서 거기로 넘기기
+			if (player != null) {
+				System.out.printf(" -로그인 성공, 환영합니다 %s 님 \n -마지막 접속일 : %s \n",player.name, player.lastLoginTime);
+				p_id = player.id;
+				updateLastLoginTime(p_id);
+				delay(1000);
+				//로그인 성공시 게임메뉴 메소드 새로 만들어서 거기로 넘기기
 			game_menu();
+			}
 			break;
 		}
 		case "2": {
-			System.out.println("회원가입");
-			System.out.println("--------------------");
-			
-			System.out.printf("이름을 입력해주세요 : ");
-			String name = sc.next();
-			System.out.printf("연락처를 입력해주세요 : ");
-			String tel = sc.next();
-			System.out.printf("id를 입력해주세요 : ");
-			String id = sc.next();
-			System.out.printf("passward를 입력해주세요 : ");
-			String pw = sc.next();
-			
-			// 아이디 패스워드 값 검증
-			
-			// 1. 데이터 값 넣기
-			signup(new user(name,tel,id,pw));
-			System.out.println();
-			System.out.println("회원가입 성공!\n로그인해주세요.");
-			
-			delay(1000);
-			break;
+		    boolean id_chk = false;
+		    boolean pw_chk = false;
+		    String name = "";
+		    String tel = ""; 
+		    String id = "";
+		    String pw="";
+		    
+		    System.out.println("회원가입");
+		    System.out.println("--------------------");
+		    
+		    System.out.printf("이름을 입력해주세요 : ");
+		    name = sc.next();
+		    System.out.printf("연락처를 입력해주세요 : ");
+		    tel = sc.next();
+		    
+		    while(!id_chk){
+		        System.out.printf("id(email)를 입력해주세요 : ");
+		        id = sc.next();
+		        
+		        if (!isValidEmail(id)) {
+		            System.out.println("email 형식으로 입력해주세요");
+		            continue;
+		        }
+		        
+		        if (isIdDuplicate(id)) {
+		            System.out.println("이미 사용중인 아이디입니다. 다른 아이디를 입력해주세요");
+		            continue;
+		        }
+		        
+		        id_chk = true; // 형식도 맞고 중복도 아니면 통과
+		    }
+		    
+		    while(!pw_chk) {
+		        System.out.printf("password를 입력해주세요 : ");
+		        pw = sc.next();
+		        pw_chk = isValidPassword(pw);
+		        if(!pw_chk) System.out.println("대문자, 숫자, 특수문자를 포함해서 8~12자리로 입력해주세요");
+		    }
+		    
+		    // 1. 데이터 값 넣기
+		    signup(new user(name,tel,id,pw));
+		    System.out.println();
+		    System.out.println("회원가입 성공!\n로그인해주세요.");
+		    
+		    delay(1000);
+		    menu();
+		    break;
 		}
 		case "3": {
 			System.out.println("아이디, 비밀번호 찾기 미구현");
@@ -165,7 +195,7 @@ public class start{
 	}
 
 	public static void rank(List<user> users) {
-	        users.sort(Comparator.comparing(user::getWins));
+	        users.sort(Comparator.comparing(user::getWins).reversed());
 	        if (users.size() > 10) {
 				for(int i = 0; i < 10; i++) {
 		        	System.out.printf("%d등 \t name : %s \t 승리 : %d \t 무승부 : %d \t 패배 : %d \n",i+1,
@@ -188,10 +218,9 @@ public class start{
 		}
 		case "2": {
 			//전적보기
-			System.out.println("전적보기 미구현");
 			user me = getuser(p_id);
 			System.out.printf("name : %s \t 승리 : %d \t 무승부 : %d \t 패배 : %d \t 승률 : %.2f \n",
-        			me.name, me.wins, me.draws, me.losses,(double)me.wins/me.wins+me.draws+me.losses * 100 );
+        			me.name, me.wins, me.draws, me.losses,(double)me.wins/(me.wins+me.draws+me.losses) * 100 );
 			while(true) {
 				System.out.printf("뒤로가기(1) : ");
 				String back = sc.next();
@@ -209,17 +238,18 @@ public class start{
 				System.out.printf("뒤로가기(1) : ");
 				String back = sc.next();
 				if(back.equals("1")) {
-					menu();
+					game_menu();
 					break;
 				}
 				System.out.println("예시 : 1");
 			}
-			game_menu();
 			break;
 		}
 		case "4": {
 			//로그아웃
-			System.out.println("로그아웃 미구현");
+			p_id = null;
+			System.out.println("로그아웃 되었습니다");
+			menu();
 			break;
 		}
 		case "5": {
@@ -236,7 +266,7 @@ public class start{
 	
 	public static void signup(user user)  {
 		try (
-			FileOutputStream fos = new FileOutputStream("user_data_txt",true);
+			FileOutputStream fos = new FileOutputStream("user_data.txt",true);
             OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
             BufferedWriter writer = new BufferedWriter(osw)) {
            
@@ -388,20 +418,20 @@ public class start{
 	
     // 게임 결과 업데이트
     public static void updateGameResult(String id, int winsToAdd, int drawsToAdd, int lossesToAdd) {
-        File file = new File("user.txt");
+        File file = new File("user_data.txt");
         if (!file.exists()) {
             return;
         }
         
         List<String> lines = new ArrayList<>();
         
-        try (FileInputStream fis = new FileInputStream("user.txt");
+        try (FileInputStream fis = new FileInputStream("user_data.txt");
              InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
              BufferedReader reader = new BufferedReader(isr)) {
             
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\" + "|");
+                String[] parts = line.split("\\|");
                 if (parts.length >= 3 && parts[2].equals(id)) {
                     int wins = (parts.length > 4 ? Integer.parseInt(parts[4]) : 0) + winsToAdd;
                     int draws = (parts.length > 5 ? Integer.parseInt(parts[5]) : 0) + drawsToAdd;
@@ -423,7 +453,7 @@ public class start{
         }
         
         // 파일 다시 쓰기
-        try (FileOutputStream fos = new FileOutputStream("user.txt");
+        try (FileOutputStream fos = new FileOutputStream("user_data.txt");
              OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
              BufferedWriter writer = new BufferedWriter(osw)) {
             
@@ -449,7 +479,7 @@ public class start{
             
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\" + "|");
+                String[] parts = line.split("\\|");
                 if (parts.length >= 3 && parts[2].equals(id)) {
                     int wins = Integer.parseInt(parts[4]);
                     int draws = Integer.parseInt(parts[5]);
@@ -482,7 +512,7 @@ public class start{
             
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\" + "|");
+                String[] parts = line.split("\\|");
                     int wins = Integer.parseInt(parts[4]);
                     int draws = Integer.parseInt(parts[5]);
                     int losses = Integer.parseInt(parts[6]);
@@ -496,6 +526,109 @@ public class start{
         }
         
         return users;
+    }
+    // 아이디 검사
+    private static boolean isValidEmail(String id) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(id).matches();
+    }
+    
+    // 비밀번호 검사
+    private static boolean isValidPassword(String password) {
+        if (password.length() < 8 || password.length() > 12) {
+            return false;
+        }
+        
+        boolean hasUpperCase = false;
+        boolean hasDigit = false;
+        boolean hasSpecialChar = false;
+        String specialChars = "!@#$%^&*()_+-=[]{}|;:',.<>?/~`";
+        
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpperCase = true;
+            }
+            else if (Character.isDigit(c)) {
+                hasDigit = true;
+            }
+            else if (specialChars.indexOf(c) >= 0) {
+                hasSpecialChar = true;
+            }
+        }
+        
+        return hasUpperCase && hasDigit && hasSpecialChar;
+    }
+    // 아이디 중복 확인 
+    private static boolean isIdDuplicate(String id) {
+        File file = new File("user_data.txt");
+        if (!file.exists()) {
+            return false; // 파일이 없으면 중복 아님
+        }
+        
+        try (FileInputStream fis = new FileInputStream("user_data.txt");
+             InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+             BufferedReader reader = new BufferedReader(isr)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 3 && parts[2].equals(id)) {
+                    return true; // 중복된 아이디 발견
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return false; // 중복 없음
+    }
+    
+    public static void updateLastLoginTime(String id) {
+        File file = new File("user_data.txt");
+        if (!file.exists()) {
+            return;
+        }
+        
+        List<String> lines = new ArrayList<>();
+        SimpleDateFormat currentTime = new SimpleDateFormat("yyyy년 MM월 dd일 a h시 mm분");
+        String newLoginTime = currentTime.format(new Date());
+        
+        try (FileInputStream fis = new FileInputStream("user_data.txt");
+             InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+             BufferedReader reader = new BufferedReader(isr)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 3 && parts[2].equals(id)) {
+                    // 해당 사용자의 마지막 로그인 시간 업데이트
+                    String updatedLine = parts[0] + "|" + parts[1] + "|" + 
+                                       parts[2] + "|" + parts[3] + "|" +
+                                       parts[4] + "|" + parts[5] + "|" + 
+                                       parts[6] + "|" + newLoginTime;
+                    lines.add(updatedLine);
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        // 파일 다시 쓰기
+        try (FileOutputStream fos = new FileOutputStream("user_data.txt");
+             OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+             BufferedWriter writer = new BufferedWriter(osw)) {
+            
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 	public static void main(String[] args) {
 		menu();
