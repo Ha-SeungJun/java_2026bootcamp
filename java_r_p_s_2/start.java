@@ -4,6 +4,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
 class user{
 	String name = "";
 	String tel = "";
@@ -54,13 +55,26 @@ class user{
     public void LoginTimeupdate(String id, String lastLoginTime) {
     	this.lastLoginTime = lastLoginTime;
     }
+	public int getWins() {
+		return wins;
+	}
+	public void setWins(int wins) {
+		this.wins = wins;
+	}
+	public int getDraws() {
+		return draws;
+	}
+	public void setDraws(int draws) {
+		this.draws = draws;
+	}
+	public int getLosses() {
+		return losses;
+	}
+	public void setLosses(int losses) {
+		this.losses = losses;
+	}
 }
 
-class user_list{
-	List<user> userlist = new ArrayList<user>();
-	
-	
-}
 
 class user_bot{
 	String user;
@@ -73,6 +87,7 @@ class user_bot{
 }
 
 public class start{	
+	static String p_id;
 	private static void check(String in)  {
 		Scanner sc = new Scanner(System.in);
 		
@@ -86,8 +101,11 @@ public class start{
 			pw = sc.next();
 			
 			user player = login(id, pw);
-			System.out.printf(" -로그인 성공, 환영합니다 %s 님 \n -마지막 접속일 : %s",player.name, player.lastLoginTime);
+			System.out.printf(" -로그인 성공, 환영합니다 %s 님 \n -마지막 접속일 : %s \n",player.name, player.lastLoginTime);
+			p_id = player.id;
+			delay(1000);
 			//로그인 성공시 게임메뉴 메소드 새로 만들어서 거기로 넘기기
+			game_menu();
 			break;
 		}
 		case "2": {
@@ -109,25 +127,29 @@ public class start{
 			signup(new user(name,tel,id,pw));
 			System.out.println();
 			System.out.println("회원가입 성공!\n로그인해주세요.");
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			menu();
-			}
 			
+			delay(1000);
+			break;
+		}
 		case "3": {
+			System.out.println("아이디, 비밀번호 찾기 미구현");
 			//3. 이름, 전화번호 일치하는 아이디 주기
 			//4. 이름 전화번호 아이디값 으로 일치하는 패스워드 Temp1234! 로 변경 or 비번 알려주기
 			break;
 		}
 		case "4": {
-			//1. 승률 기준 정렬해서 랭킹 보여주기'
-
-			//일단 게임하기 테스트
-			game();
+			//1. 승수 기준 정렬해서 랭킹 보여주기'
+			rank(getallusers());
+			while(true) {
+				System.out.printf("뒤로가기(1) : ");
+				String back = sc.next();
+				if(back.equals("1")) {
+					menu();
+					break;
+				}
+				System.out.println("예시 : 1");
+			}
+			menu();
 			break;
 		}
 		case "5": {
@@ -138,6 +160,77 @@ public class start{
 			System.out.println("잘못된 입력, 다시 입력해주세요");
 			System.out.println("올바른 예시 : 1");
 			menu();
+			break;
+		}
+	}
+
+	public static void rank(List<user> users) {
+	        users.sort(Comparator.comparing(user::getWins));
+	        if (users.size() > 10) {
+				for(int i = 0; i < 10; i++) {
+		        	System.out.printf("%d등 \t name : %s \t 승리 : %d \t 무승부 : %d \t 패배 : %d \n",i+1,
+		        			users.get(i).name, users.get(i).wins, users.get(i).draws, users.get(i).losses );
+		        }
+	        }else {
+				for(int i = 0; i < users.size(); i++) {
+		        	System.out.printf("%d등 \t name : %s \t 승리 : %d \t 무승부 : %d \t 패배 : %d \n",i+1,
+		        			users.get(i).name, users.get(i).wins, users.get(i).draws, users.get(i).losses );
+	        	}
+	        }
+	}
+	public static void g_m_check(String in) {
+		Scanner sc = new Scanner(System.in);
+		
+		switch (in) {
+		case "1": {
+			game();
+			break;
+		}
+		case "2": {
+			//전적보기
+			System.out.println("전적보기 미구현");
+			user me = getuser(p_id);
+			System.out.printf("name : %s \t 승리 : %d \t 무승부 : %d \t 패배 : %d \t 승률 : %.2f \n",
+        			me.name, me.wins, me.draws, me.losses,(double)me.wins/me.wins+me.draws+me.losses * 100 );
+			while(true) {
+				System.out.printf("뒤로가기(1) : ");
+				String back = sc.next();
+				if(back.equals("1")) {
+					menu();
+					break;
+				}
+			break;
+			}
+		}
+		case "3": {
+			//랭킹보기
+			rank(getallusers());
+			while(true) {
+				System.out.printf("뒤로가기(1) : ");
+				String back = sc.next();
+				if(back.equals("1")) {
+					menu();
+					break;
+				}
+				System.out.println("예시 : 1");
+			}
+			game_menu();
+			break;
+		}
+		case "4": {
+			//로그아웃
+			System.out.println("로그아웃 미구현");
+			break;
+		}
+		case "5": {
+			System.out.println("게임이 종료되었습니다");
+			System.exit(0);
+		}
+		default:
+			System.out.println("잘못된 입력, 다시 입력해주세요");
+			System.out.println("올바른 예시 : 1");
+			g_m_check(in);
+			break;
 		}
 	}
 	
@@ -191,14 +284,17 @@ public class start{
 		if (ub.user.equals(ub.bot)) {
 			System.out.printf("컴 : %s, 당신 : %s \n무승부 입니다\n", ub.bot, ub.user);
 			//데이터 파일에서 무승부값 올리기
+			updateGameResult(p_id, 0, 1, 0);
 		} else if ((ub.user.equals("가위") && ub.bot.equals("보"))
 				|| (ub.user.equals("바위") && ub.bot.equals("가위"))
 				|| (ub.user.equals("보") && ub.bot.equals("바위"))) {
 			System.out.printf("컴 : %s, 당신 : %s \nUser 승리!\n", ub.bot, ub.user);
 			//데이터 파일에서 승리값 올리기
+			updateGameResult(p_id, 1, 0, 0);
 		} else {
 			System.out.printf("컴 : %s, 당신 : %s \n컴 승리!\n", ub.bot, ub.user);
 			//데이터 파일에서 패배값 올리기
+			updateGameResult(p_id, 0, 0, 1);
 		}
 	}
 	
@@ -215,11 +311,14 @@ public class start{
 		  if(chkList.contains(user)) {
 			user_bot ub = rand_and_change(user);;
 		    game_start(ub);
+		    delay(1000);
+		    game_menu();
 		  }
 		  else {
 			  System.out.println("잘못된 입력");
 			  System.out.println("가위, 바위, 보, 1, 2, 3 중에서 입력해 주세요.");
 			  System.out.println("---------------------------");
+			  delay(1000);
 			  game();
 		  }
 	}
@@ -264,7 +363,142 @@ public class start{
 		
 		check(in);
 	}
+	
+	public static void game_menu() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("---------------------------");
+		System.out.println(" 1. 게임하기 \n 2. 전적보기 \n 3. 랭킹보기 \n 4. 로그아웃 \n 5. 나가기");
+		System.out.println("---------------------------");
+		System.out.printf("원하시는 번호를 입력해주세요 : ");
+		String in = " "; 
+		in = sc.next().strip();
+		
+		g_m_check(in);
+	}
+	
+	public static void delay(int i) {
+		try {
+			Thread.sleep(i);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			}
+	}
+	
+	
+    // 게임 결과 업데이트
+    public static void updateGameResult(String id, int winsToAdd, int drawsToAdd, int lossesToAdd) {
+        File file = new File("user.txt");
+        if (!file.exists()) {
+            return;
+        }
+        
+        List<String> lines = new ArrayList<>();
+        
+        try (FileInputStream fis = new FileInputStream("user.txt");
+             InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+             BufferedReader reader = new BufferedReader(isr)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\" + "|");
+                if (parts.length >= 3 && parts[2].equals(id)) {
+                    int wins = (parts.length > 4 ? Integer.parseInt(parts[4]) : 0) + winsToAdd;
+                    int draws = (parts.length > 5 ? Integer.parseInt(parts[5]) : 0) + drawsToAdd;
+                    int losses = (parts.length > 6 ? Integer.parseInt(parts[6]) : 0) + lossesToAdd;
+                    String lastLogin = parts.length > 7 ? parts[7] : "";
+                    
+                    String updatedLine = parts[0] + "|" + parts[1] + "|" + 
+                                       parts[2] + "|" + parts[3] + "|" +
+                                       wins + "|" + draws + "|" + 
+                                       losses + "|" + lastLogin;
+                    lines.add(updatedLine);
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        // 파일 다시 쓰기
+        try (FileOutputStream fos = new FileOutputStream("user.txt");
+             OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+             BufferedWriter writer = new BufferedWriter(osw)) {
+            
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // 사용자 정보 가져오기
+    public static user getuser(String id) {
+        File file = new File("C:\\Users\\hallyms\\eclipse-workspace\\javaFund\\user_data.txt");
+        if (!file.exists()) {
+            return null;
+        }
+        
+        try (FileInputStream fis = new FileInputStream("user_data.txt");
+             InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+             BufferedReader reader = new BufferedReader(isr)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\" + "|");
+                if (parts.length >= 3 && parts[2].equals(id)) {
+                    int wins = Integer.parseInt(parts[4]);
+                    int draws = Integer.parseInt(parts[5]);
+                    int losses = Integer.parseInt(parts[6]);
+                    String lastLogin =  parts[7];
+                    
+                    return new user(parts[0], parts[1], parts[2], parts[3], 
+                                       wins, draws, losses, lastLogin);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
+    // 전체 사용자 목록 가져오기 (랭킹용)
+    public static List<user> getallusers() {
+        List<user> users = new ArrayList<>();
+        File file = new File("C:\\Users\\hallyms\\eclipse-workspace\\javaFund\\user_data.txt");
+        
+        if (!file.exists()) {
+            return users;
+        }
+        
+        try (FileInputStream fis = new FileInputStream("user_data.txt");
+             InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+             BufferedReader reader = new BufferedReader(isr)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\" + "|");
+                    int wins = Integer.parseInt(parts[4]);
+                    int draws = Integer.parseInt(parts[5]);
+                    int losses = Integer.parseInt(parts[6]);
+                    String lastLogin = parts[7];
+                    
+                    users.add(new user(parts[0], parts[1], parts[2], parts[3], 
+                                          wins, draws, losses, lastLogin));
+                }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return users;
+    }
 	public static void main(String[] args) {
 		menu();
 	}
 }
+
